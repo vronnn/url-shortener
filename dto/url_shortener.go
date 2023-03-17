@@ -9,7 +9,7 @@ type UrlShortenerCreateDTO struct {
 	LongUrl 	string 		`json:"long_url" form:"long_url" binding:"required"`
 	ShortUrl 	string 		`json:"short_url" form:"short_url" binding:"required"`
 	Views 		uint64  	`json:"views" form:"views" binding:"required"`
-	Public		bool		`json:"public" form:"public" binding:"required"`
+	Private		bool		`json:"private" form:"private" binding:"required"`
 
 	Password	string		`json:"password" form:"password"`
 }
@@ -19,7 +19,7 @@ type UrlShortenerUpdateDTO struct {
 	LongUrl 	string 		`json:"long_url" form:"long_url"`
 	ShortUrl 	string 		`json:"short_url" form:"short_url"`
 	Views 		uint64  	`json:"views" form:"views"`
-	Public		bool		`json:"public" form:"public"`
+	Private		bool		`json:"private" form:"private"`
 
 	Password	string		`json:"password" form:"password"`
 }

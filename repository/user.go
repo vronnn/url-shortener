@@ -29,9 +29,9 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 
 func(db *userConnection) RegisterUser(ctx context.Context, user entity.User) (entity.User, error) {
 	user.ID = uuid.New()
-	uc := db.connection.Create(&user)
-	if uc.Error != nil {
-		return entity.User{}, uc.Error
+	tx := db.connection.Create(&user)
+	if tx.Error != nil {
+		return entity.User{}, tx.Error
 	}
 	return user, nil
 }
@@ -47,34 +47,34 @@ func(db *userConnection) GetAllUser(ctx context.Context) ([]entity.User, error) 
 
 func(db *userConnection) FindUserByEmail(ctx context.Context, email string) (entity.User, error) {
 	var user entity.User
-	ux := db.connection.Where("email = ?", email).Take(&user)
-	if ux.Error != nil {
-		return user, ux.Error
+	tx := db.connection.Where("email = ?", email).Take(&user)
+	if tx.Error != nil {
+		return user, tx.Error
 	}
 	return user, nil
 }
 
 func(db *userConnection) FindUserByID(ctx context.Context, userID uuid.UUID) (entity.User, error) {
 	var user entity.User
-	ux := db.connection.Where("id = ?", userID).Take(&user)
-	if ux.Error != nil {
-		return user, ux.Error
+	tx := db.connection.Where("id = ?", userID).Take(&user)
+	if tx.Error != nil {
+		return user, tx.Error
 	}
 	return user, nil
 }
 
 func(db *userConnection) DeleteUser(ctx context.Context, userID uuid.UUID) (error) {
-	uc := db.connection.Delete(&entity.User{}, &userID)
-	if uc.Error != nil {
-		return uc.Error
+	tx := db.connection.Delete(&entity.User{}, &userID)
+	if tx.Error != nil {
+		return tx.Error
 	}
 	return nil
 }
 
 func(db *userConnection) UpdateUser(ctx context.Context, user entity.User) (error) {
-	uc := db.connection.Updates(&user)
-	if uc.Error != nil {
-		return uc.Error
+	tx := db.connection.Updates(&user)
+	if tx.Error != nil {
+		return tx.Error
 	}
 	return nil
 }
