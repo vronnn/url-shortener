@@ -34,6 +34,11 @@ func NewUserController(us service.UserService, jwts service.JWTService) UserCont
 func(uc *userController) RegisterUser(ctx *gin.Context) {
 	var user dto.UserCreateDto
 	err := ctx.ShouldBind(&user)
+	if err != nil {
+		res := common.BuildErrorResponse("Gagal Menambahkan User", err.Error(), common.EmptyObj{})
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
 	checkUser, _ := uc.userService.CheckUser(ctx.Request.Context(), user.Email)
 	if checkUser {
 		res := common.BuildErrorResponse("User Sudah Terdaftar", "false", common.EmptyObj{})
@@ -66,6 +71,11 @@ func(uc *userController) GetAllUser(ctx *gin.Context) {
 func(uc *userController) LoginUser(ctx *gin.Context) {
 	var userLoginDTO dto.UserLoginDTO
 	err := ctx.ShouldBind(&userLoginDTO)
+	if err != nil {
+		res := common.BuildErrorResponse("Gagal Login", err.Error(), common.EmptyObj{})
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
 	res, _ := uc.userService.Verify(ctx.Request.Context(), userLoginDTO.Email, userLoginDTO.Password)
 	if !res {
 		response := common.BuildErrorResponse("Gagal Login", "Email atau Password Salah", common.EmptyObj{})
