@@ -28,6 +28,12 @@ func main() {
 		
 		jwtService service.JWTService = service.NewJWTService()
 
+		privateRepository repository.PrivateRepository = repository.NewPrivateRepository(db)
+
+		urlShortenerRepository repository.UrlShortenerRepository = repository.NewUrlShortenerRepository(db)
+		urlShortenerService service.UrlShortenerService = service.NewUrlShortenerService(urlShortenerRepository, privateRepository)
+		urlShortenerController controller.UrlShortenerController = controller.NewUrlShortenerController(urlShortenerService, jwtService)
+
 		userRepository repository.UserRepository = repository.NewUserRepository(db)
 		userService service.UserService = service.NewUserService(userRepository)
 		userController controller.UserController = controller.NewUserController(userService, jwtService)
@@ -35,6 +41,7 @@ func main() {
 
 	server := gin.Default()
 	routes.UserRoutes(server, userController, jwtService)
+	routes.UrlShortenerRoutes(server, urlShortenerController, jwtService)
 
 	port := os.Getenv("PORT")
 	if port == "" {

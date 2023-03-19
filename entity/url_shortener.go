@@ -11,7 +11,7 @@ type UrlShortener struct {
 	Views 		uint64  	`json:"views"`
 	Private		bool		`json:"private"`
 
-	UserID   	uuid.UUID 	`gorm:"foreignKey" json:"user_id"`
+	UserID   	*uuid.UUID 	`gorm:"foreignKey" json:"user_id"`
 	User     	*User  		`gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user,omitempty"`
 	
 	Timestamp

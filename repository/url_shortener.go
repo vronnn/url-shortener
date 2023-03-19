@@ -13,6 +13,7 @@ type UrlShortenerRepository interface {
 	GetAllUrlShortener(ctx context.Context) ([]entity.UrlShortener, error)
 	GetUrlShortenerByID(ctx context.Context, urlShortenerID uuid.UUID) (entity.UrlShortener, error)
 	GetUrlShortenerByUserID(ctx context.Context, UserID uuid.UUID) ([]entity.UrlShortener, error)
+	GetUrlShortenerByShortUrl(ctx context.Context, shortUrl string) (entity.UrlShortener, error)
 	UpdateUrlShortener(ctx context.Context, urlShortener entity.UrlShortener) (error)
 	DeleteUrlShortener(ctx context.Context, urlShortenerID uuid.UUID) (error)
 }
@@ -59,6 +60,15 @@ func(db *urlShortenerConnection) GetUrlShortenerByUserID(ctx context.Context, Us
 	tx := db.connection.Where("user_id = ?", UserID).Find(&urlShortener)
 	if tx.Error != nil {
 		return nil, tx.Error
+	}
+	return urlShortener, nil
+}
+
+func(db *urlShortenerConnection) GetUrlShortenerByShortUrl(ctx context.Context, shortUrl string) (entity.UrlShortener, error) {
+	var urlShortener entity.UrlShortener
+	tx := db.connection.Where("short_url = ?", shortUrl).Take(&urlShortener)
+	if tx.Error != nil {
+		return entity.UrlShortener{}, tx.Error
 	}
 	return urlShortener, nil
 }
