@@ -24,7 +24,10 @@ type UrlShortenerUpdateDTO struct {
 	LongUrl 	string 		`json:"long_url" form:"long_url"`
 	ShortUrl 	string 		`json:"short_url" form:"short_url"`
 	Views 		uint64  	`json:"views" form:"views"`
-	Private		bool		`json:"private" form:"private"`
 
 	Password	string		`json:"password" form:"password"`
+}
+
+func BoolPointer(b bool) *bool {
+    return &b
 }
