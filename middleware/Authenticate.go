@@ -65,13 +65,8 @@ func Authenticate(jwtService service.JWTService, isAdmin bool) gin.HandlerFunc {
 
 func CreateShortUrlAuthenticate(jwtService service.JWTService, isAdmin bool) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if ctx.GetHeader("Authorization") == "" {
-			return
-		}
 		authHeader := ctx.GetHeader("Authorization")
 		if authHeader == "" {
-			response := common.BuildErrorResponse("Gagal Memproses Request", "Token Tidak Ditemukan", nil)
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
 			return
 		}
 		if !strings.Contains(authHeader, "Bearer ") {
