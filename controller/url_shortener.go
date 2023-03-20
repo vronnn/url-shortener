@@ -147,6 +147,13 @@ func(uc *urlShortenerController) UpdateUrlShortener(ctx *gin.Context) {
 		return
 	}
 
+	checkDuplicateUrlShortener, _ := uc.urlShortenerService.GetUrlShortenerByShortUrl(ctx.Request.Context(), urlShortenerDTO.ShortUrl)
+	if checkDuplicateUrlShortener.ShortUrl != "" {
+		res := common.BuildErrorResponse("Gagal Menambahkan Url Shortener", "Short Url Sudah Terdaftar", common.EmptyObj{})
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
 	err = uc.urlShortenerService.UpdateUrlShortener(ctx, urlShortenerDTO, urlShortenerID)
 	if err != nil {
 		res := common.BuildErrorResponse("Gagal Mengupdate Url Shortener", err.Error(), common.EmptyObj{})
