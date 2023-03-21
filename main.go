@@ -4,6 +4,7 @@ import (
 	"gin-gorm-clean-template/common"
 	"gin-gorm-clean-template/config"
 	"gin-gorm-clean-template/controller"
+	"gin-gorm-clean-template/middleware"
 	"gin-gorm-clean-template/repository"
 	"gin-gorm-clean-template/routes"
 	"gin-gorm-clean-template/service"
@@ -40,6 +41,10 @@ func main() {
 	)
 
 	server := gin.Default()
+	server.Use(
+		middleware.CORSMiddleware(),
+		gin.Recovery(),
+	)
 	routes.UserRoutes(server, userController, jwtService)
 	routes.UrlShortenerRoutes(server, urlShortenerController, jwtService)
 
@@ -47,5 +52,5 @@ func main() {
 	if port == "" {
 		port = "8000"
 	}
-	server.Run("127.0.0.1:" + port)
+	server.Run(":" + port)
 }
