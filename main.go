@@ -41,10 +41,7 @@ func main() {
 	)
 
 	server := gin.Default()
-	server.Use(
-		middleware.CORSMiddleware(),
-		gin.Recovery(),
-	)
+	server.Use(middleware.CORSMiddleware())
 	routes.UserRoutes(server, userController, jwtService)
 	routes.UrlShortenerRoutes(server, urlShortenerController, jwtService)
 
