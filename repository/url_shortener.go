@@ -16,6 +16,7 @@ type UrlShortenerRepository interface {
 	GetUrlShortenerByShortUrl(ctx context.Context, shortUrl string) (entity.UrlShortener, error)
 	UpdateUrlShortener(ctx context.Context, urlShortener entity.UrlShortener) (error)
 	DeleteUrlShortener(ctx context.Context, urlShortenerID uuid.UUID) (error)
+	IncreaseViewsCount(ctx context.Context, urlShortener entity.UrlShortener) (entity.UrlShortener, error)
 }
 
 type urlShortenerConnection struct {
@@ -87,4 +88,13 @@ func(db *urlShortenerConnection) DeleteUrlShortener(ctx context.Context, urlShor
 		return tx.Error
 	}
 	return nil
+}
+
+func(db *urlShortenerConnection) IncreaseViewsCount(ctx context.Context, urlShortener entity.UrlShortener) (entity.UrlShortener, error) {
+	urlShortener.Views = urlShortener.Views + 1
+	tx := db.connection.Updates(&urlShortener)
+	if tx.Error != nil {
+		return entity.UrlShortener{}, tx.Error
+	}
+	return urlShortener, nil
 }

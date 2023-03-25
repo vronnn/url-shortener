@@ -52,14 +52,14 @@ func(uc *urlShortenerController) CreateUrlShortener(ctx *gin.Context) {
 		urlShortener.UserID = userID
 	}
 	
-	checkUrlShortener, _ := uc.urlShortenerService.GetUrlShortenerByShortUrl(ctx.Request.Context(), urlShortener.ShortUrl)
+	checkUrlShortener, _ := uc.urlShortenerService.ValidateShortUrl(ctx.Request.Context(), urlShortener.ShortUrl)
 	if checkUrlShortener.ShortUrl != "" {
 		res := common.BuildErrorResponse("Gagal Menambahkan Url Shortener", "Short Url Sudah Terdaftar", common.EmptyObj{})
 		ctx.JSON(http.StatusBadRequest, res)
 		return
 	}
 
-	if *urlShortener.Private && urlShortener.Password == "" {
+	if *urlShortener.IsPrivate && urlShortener.Password == "" {
 		res := common.BuildErrorResponse("Gagal Menambahkan Url Shortener", "Url Shortener Private Harus Mengandung Password", common.EmptyObj{})
 		ctx.JSON(http.StatusBadRequest, res)
 		return
@@ -147,7 +147,7 @@ func(uc *urlShortenerController) UpdateUrlShortener(ctx *gin.Context) {
 		return
 	}
 
-	checkDuplicateUrlShortener, _ := uc.urlShortenerService.GetUrlShortenerByShortUrl(ctx.Request.Context(), urlShortenerDTO.ShortUrl)
+	checkDuplicateUrlShortener, _ := uc.urlShortenerService.ValidateShortUrl(ctx.Request.Context(), urlShortenerDTO.ShortUrl)
 	if checkDuplicateUrlShortener.ShortUrl != "" {
 		res := common.BuildErrorResponse("Gagal Menambahkan Url Shortener", "Short Url Sudah Terdaftar", common.EmptyObj{})
 		ctx.JSON(http.StatusBadRequest, res)
@@ -225,7 +225,7 @@ func(uc *urlShortenerController) UpdatePrivate(ctx *gin.Context) {
 		return
 	}
 
-	if !*urlShortener.Private {
+	if !*urlShortener.IsPrivate {
 		if privateDTO.Password == "" {
 			res := common.BuildErrorResponse("Gagal Mengupdate Url Shortener", "Url Shortener Private Harus Mengandung Password", common.EmptyObj{})
 			ctx.JSON(http.StatusBadRequest, res)

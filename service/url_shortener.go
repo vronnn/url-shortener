@@ -21,6 +21,7 @@ type UrlShortenerService interface {
 	ValidateUrlShortenerUser(ctx context.Context, userID string, urlShortenerID string) (bool)
 	UpdatePrivate(ctx context.Context, urlShortenerID string, privateDTO dto.PrivateUpdateDTO) (error)
 	UpdatePublic(ctx context.Context, urlShortenerID string) (error)
+	ValidateShortUrl(ctx context.Context, urlShortenerID string) (entity.UrlShortener, error)
 }
 
 type urlShortenerService struct {
@@ -48,7 +49,7 @@ func(us *urlShortenerService) CreateUrlShortener(ctx context.Context, urlShorten
 	if err != nil {
 		return urlShortener, err
 	}
-	if *urlShortenerDTO.Private {
+	if *urlShortenerDTO.IsPrivate {
 		private := entity.Private{
 			Password: urlShortenerDTO.Password,
 			UrlShortenerID: res.ID,
@@ -62,7 +63,11 @@ func(us *urlShortenerService) CreateUrlShortener(ctx context.Context, urlShorten
 }
 
 func(us *urlShortenerService) GetUrlShortenerByShortUrl(ctx context.Context, shortUrl string) (entity.UrlShortener, error) {
-	return us.urlShortenerRepository.GetUrlShortenerByShortUrl(ctx, shortUrl)
+	res, err := us.urlShortenerRepository.GetUrlShortenerByShortUrl(ctx, shortUrl)
+	if err != nil {
+		return entity.UrlShortener{}, err
+	}
+	return us.urlShortenerRepository.IncreaseViewsCount(ctx, res)
 }
 
 func(us *urlShortenerService) GetAllUrlShortener(ctx context.Context) ([]entity.UrlShortener, error) {
@@ -129,7 +134,7 @@ func(us *urlShortenerService) UpdatePrivate(ctx context.Context, urlShortenerID 
 	}
 	urlShortener := entity.UrlShortener{
 		ID: urlShortenerUUID,
-		Private: dto.BoolPointer(true),
+		IsPrivate: dto.BoolPointer(true),
 	}
 	err = us.urlShortenerRepository.UpdateUrlShortener(ctx, urlShortener)
 	if err != nil {
@@ -154,7 +159,7 @@ func(us *urlShortenerService) UpdatePublic(ctx context.Context, urlShortenerID s
 	}
 	urlShortener := entity.UrlShortener{
 		ID: urlShortenerUUID,
-		Private: dto.BoolPointer(false),
+		IsPrivate: dto.BoolPointer(false),
 	}
 	err = us.urlShortenerRepository.UpdateUrlShortener(ctx, urlShortener)
 	if err != nil {
@@ -165,4 +170,8 @@ func(us *urlShortenerService) UpdatePublic(ctx context.Context, urlShortenerID s
 		return err
 	}
 	return us.privateRepository.DeletePrivate(ctx, private.ID)
+}
+
+func(us *urlShortenerService) ValidateShortUrl(ctx context.Context, urlShortenerID string) (entity.UrlShortener, error) {
+	return us.urlShortenerRepository.GetUrlShortenerByShortUrl(ctx, urlShortenerID)
 }
