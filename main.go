@@ -31,7 +31,11 @@ func main() {
 
 		privateRepository repository.PrivateRepository = repository.NewPrivateRepository(db)
 
-		urlShortenerRepository repository.UrlShortenerRepository = repository.NewUrlShortenerRepository(db)
+		feedsRepository repository.FeedsRepository = repository.NewFeedsRepository(db)
+		feedsService service.FeedsService = service.NewFeedsService(feedsRepository)
+		feedsController controller.FeedsController = controller.NewFeedsController(feedsService)
+		
+		urlShortenerRepository repository.UrlShortenerRepository = repository.NewUrlShortenerRepository(db, feedsRepository)
 		urlShortenerService service.UrlShortenerService = service.NewUrlShortenerService(urlShortenerRepository, privateRepository)
 		urlShortenerController controller.UrlShortenerController = controller.NewUrlShortenerController(urlShortenerService, jwtService)
 
@@ -44,6 +48,7 @@ func main() {
 	server.Use(middleware.CORSMiddleware())
 	routes.UserRoutes(server, userController, jwtService)
 	routes.UrlShortenerRoutes(server, urlShortenerController, jwtService)
+	routes.FeedsRoutes(server, feedsController, jwtService)
 
 	port := os.Getenv("PORT")
 	if port == "" {

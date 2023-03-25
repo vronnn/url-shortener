@@ -21,11 +21,13 @@ type UrlShortenerRepository interface {
 
 type urlShortenerConnection struct {
 	connection *gorm.DB
+	feedsRepository FeedsRepository
 }
 
-func NewUrlShortenerRepository(db *gorm.DB) UrlShortenerRepository {
+func NewUrlShortenerRepository(db *gorm.DB, fs FeedsRepository) UrlShortenerRepository {
 	return &urlShortenerConnection{
 		connection: db,
+		feedsRepository: fs,
 	}
 }
 
@@ -34,6 +36,15 @@ func(db *urlShortenerConnection) CreateUrlShortener(ctx context.Context, urlShor
 	tx := db.connection.Create(&urlShortener)
 	if tx.Error != nil {
 		return entity.UrlShortener{}, tx.Error
+	}
+	var feeds = entity.Feeds{
+		Data: urlShortener.ShortUrl,
+		Method: "Create",
+		UrlShortenerID: urlShortener.ID,
+	}
+	_, err := db.feedsRepository.CreateFeeds(ctx, feeds)
+	if err != nil {
+		return entity.UrlShortener{}, err
 	}
 	return urlShortener, nil
 }
