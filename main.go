@@ -30,17 +30,16 @@ func main() {
 		jwtService service.JWTService = service.NewJWTService()
 
 		privateRepository repository.PrivateRepository = repository.NewPrivateRepository(db)
-
 		feedsRepository repository.FeedsRepository = repository.NewFeedsRepository(db)
-		feedsService service.FeedsService = service.NewFeedsService(feedsRepository)
-		feedsController controller.FeedsController = controller.NewFeedsController(feedsService)
-		
 		urlShortenerRepository repository.UrlShortenerRepository = repository.NewUrlShortenerRepository(db, feedsRepository)
-		urlShortenerService service.UrlShortenerService = service.NewUrlShortenerService(urlShortenerRepository, privateRepository)
-		urlShortenerController controller.UrlShortenerController = controller.NewUrlShortenerController(urlShortenerService, jwtService)
-
 		userRepository repository.UserRepository = repository.NewUserRepository(db)
+
+		feedsService service.FeedsService = service.NewFeedsService(feedsRepository, urlShortenerRepository, userRepository)
+		urlShortenerService service.UrlShortenerService = service.NewUrlShortenerService(urlShortenerRepository, privateRepository)
 		userService service.UserService = service.NewUserService(userRepository)
+
+		feedsController controller.FeedsController = controller.NewFeedsController(feedsService)
+		urlShortenerController controller.UrlShortenerController = controller.NewUrlShortenerController(urlShortenerService, jwtService)
 		userController controller.UserController = controller.NewUserController(userService, jwtService)
 	)
 

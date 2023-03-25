@@ -34,7 +34,7 @@ func(db *feedsConnection) CreateFeeds(ctx context.Context, feeds entity.Feeds) (
 
 func(db *feedsConnection) GetAllFeeds(ctx context.Context) ([]entity.Feeds, error) {
 	var feedsList []entity.Feeds
-	tx := db.connection.Find(&feedsList)
+	tx := db.connection.Order("created_at desc").Find(&feedsList)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}

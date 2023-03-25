@@ -6,6 +6,7 @@ import (
 
 type UrlShortener struct {
 	ID        	uuid.UUID   `gorm:"primary_key;not_null" json:"id"`
+	Title 		string 		`json:"title"`
 	LongUrl 	string 		`json:"long_url"`
 	ShortUrl 	string 		`json:"short_url"`
 	Views 		uint64  	`json:"views"`

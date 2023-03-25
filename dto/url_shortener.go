@@ -8,6 +8,7 @@ import (
 
 type UrlShortenerCreateDTO struct {
 	ID        	uuid.UUID   `gorm:"primary_key;not_null" json:"id"`
+	Title 		string 		`json:"title" form:"title" binding:"required"`
 	LongUrl 	string 		`json:"long_url" form:"long_url" binding:"required"`
 	ShortUrl 	string 		`json:"short_url" form:"short_url" binding:"required"`
 	Views 		uint64  	`json:"views" form:"views"`
@@ -22,6 +23,7 @@ type UrlShortenerCreateDTO struct {
 
 type UrlShortenerUpdateDTO struct {
 	ID        	uuid.UUID   `gorm:"primary_key;not_null" json:"id"`
+	Title 		string 		`json:"title" form:"title"`
 	LongUrl 	string 		`json:"long_url" form:"long_url"`
 	ShortUrl 	string 		`json:"short_url" form:"short_url"`
 	Views 		uint64  	`json:"views" form:"views"`
