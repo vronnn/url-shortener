@@ -99,8 +99,14 @@ func(uc *urlShortenerController) GetUrlShortenerByID(ctx *gin.Context) {
 }
 
 func(uc *urlShortenerController) GetUrlShortenerByUserID(ctx *gin.Context) {
-	userID := ctx.Param("id")
-	result, err := uc.urlShortenerService.GetUrlShortenerByUserID(ctx.Request.Context(), userID)
+	token := ctx.MustGet("token").(string)
+	userID, err := uc.jwtService.GetUserIDByToken(token)
+	if err != nil {
+		response := common.BuildErrorResponse("Gagal Memproses Request", "Token Tidak Valid", nil)
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
+		return
+	}
+	result, err := uc.urlShortenerService.GetUrlShortenerByUserID(ctx.Request.Context(), userID.String())
 	if err != nil {
 		res := common.BuildErrorResponse("Gagal Mendapatkan Url Shortener User", err.Error(), common.EmptyObj{})
 		ctx.JSON(http.StatusBadRequest, res)

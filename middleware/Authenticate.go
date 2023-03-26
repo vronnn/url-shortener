@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"gin-gorm-clean-template/common"
 	"gin-gorm-clean-template/service"
 	"net/http"
@@ -36,20 +35,20 @@ func Authenticate(jwtService service.JWTService, isAdmin bool) gin.HandlerFunc {
 			return
 		}
 
-		if isAdmin {
-			userRole, err := jwtService.GetUserRoleByToken(authHeader)
-			if err != nil {
-				response := common.BuildErrorResponse("Gagal Memproses Request", "Token Tidak Valid", nil)
-				ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
-				return
-			}
-			fmt.Println(userRole)
-			if userRole != "admin" {
-				response := common.BuildErrorResponse("Gagal Memproses Request", "Role User Tidak Memiliki Akses ke Endpoint Ini", nil)
-				ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
-				return
-			}
-		}
+		// if isAdmin {
+		// 	userRole, err := jwtService.GetUserRoleByToken(authHeader)
+		// 	if err != nil {
+		// 		response := common.BuildErrorResponse("Gagal Memproses Request", "Token Tidak Valid", nil)
+		// 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
+		// 		return
+		// 	}
+		// 	fmt.Println(userRole)
+		// 	if userRole != "admin" {
+		// 		response := common.BuildErrorResponse("Gagal Memproses Request", "Role User Tidak Memiliki Akses ke Endpoint Ini", nil)
+		// 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
+		// 		return
+		// 	}
+		// }
 
 		userID, err := jwtService.GetUserIDByToken(authHeader)
 		if err != nil {
@@ -87,20 +86,20 @@ func CreateShortUrlAuthenticate(jwtService service.JWTService, isAdmin bool) gin
 			return
 		}
 
-		if isAdmin {
-			userRole, err := jwtService.GetUserRoleByToken(authHeader)
-			if err != nil {
-				response := common.BuildErrorResponse("Gagal Memproses Request", "Token Tidak Valid", nil)
-				ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
-				return
-			}
-			fmt.Println(userRole)
-			if userRole != "admin" {
-				response := common.BuildErrorResponse("Gagal Memproses Request", "Role User Tidak Memiliki Akses ke Endpoint Ini", nil)
-				ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
-				return
-			}
-		}
+		// if isAdmin {
+		// 	userRole, err := jwtService.GetUserRoleByToken(authHeader)
+		// 	if err != nil {
+		// 		response := common.BuildErrorResponse("Gagal Memproses Request", "Token Tidak Valid", nil)
+		// 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
+		// 		return
+		// 	}
+		// 	fmt.Println(userRole)
+		// 	if userRole != "admin" {
+		// 		response := common.BuildErrorResponse("Gagal Memproses Request", "Role User Tidak Memiliki Akses ke Endpoint Ini", nil)
+		// 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
+		// 		return
+		// 	}
+		// }
 
 		userID, err := jwtService.GetUserIDByToken(authHeader)
 		if err != nil {
