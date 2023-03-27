@@ -15,7 +15,7 @@ type UrlShortenerService interface {
 	GetUrlShortenerByShortUrl(ctx context.Context, shortUrl string) (entity.UrlShortener, error)
 	GetAllUrlShortener(ctx context.Context) ([]entity.UrlShortener, error)
 	GetUrlShortenerByID(ctx context.Context, urlShortenerID string) (entity.UrlShortener, error)
-	GetUrlShortenerByUserID(ctx context.Context, UserID string) ([]entity.UrlShortener, error)
+	GetUrlShortenerByUserID(ctx context.Context, UserID string) ([]dto.UrlShortenerResponseDTO, error)
 	UpdateUrlShortener(ctx context.Context, urlShortenerDTO dto.UrlShortenerUpdateDTO, urlShortenerID string) (error)
 	DeleteUrlShortener(ctx context.Context, urlShortenerID string) (error)
 	ValidateUrlShortenerUser(ctx context.Context, userID string, urlShortenerID string) (bool)
@@ -27,12 +27,14 @@ type UrlShortenerService interface {
 type urlShortenerService struct {
 	urlShortenerRepository repository.UrlShortenerRepository
 	privateRepository repository.PrivateRepository
+	userRepository repository.UserRepository
 }
 
-func NewUrlShortenerService(ur repository.UrlShortenerRepository, pr repository.PrivateRepository) UrlShortenerService {
+func NewUrlShortenerService(ur repository.UrlShortenerRepository, pr repository.PrivateRepository, usr repository.UserRepository) UrlShortenerService {
 	return &urlShortenerService{
 		urlShortenerRepository: ur,
 		privateRepository: pr,
+		userRepository: usr,
 	}
 }
 
@@ -82,12 +84,37 @@ func(us *urlShortenerService) GetUrlShortenerByID(ctx context.Context, urlShorte
 	return us.urlShortenerRepository.GetUrlShortenerByID(ctx, urlShortenerUUID)
 }
 
-func(us *urlShortenerService) GetUrlShortenerByUserID(ctx context.Context, UserID string) ([]entity.UrlShortener, error) {
+func(us *urlShortenerService) GetUrlShortenerByUserID(ctx context.Context, UserID string) ([]dto.UrlShortenerResponseDTO, error) {
 	userUUID, err := uuid.Parse(UserID)
 	if err != nil {
 		return nil, err
 	}
-	return us.urlShortenerRepository.GetUrlShortenerByUserID(ctx, userUUID)
+	res, err := us.urlShortenerRepository.GetUrlShortenerByUserID(ctx, userUUID)
+	if err != nil {
+		return nil, err
+	}
+	res2, err := us.userRepository.FindUserByID(ctx, userUUID)
+	if err != nil {
+		return nil, err
+	}
+	var userDTOResponse = []dto.UrlShortenerResponseDTO{}
+	var userDTO = dto.UrlShortenerResponseDTO{}
+	for _, v := range res {
+		userDTO.ID = v.ID
+		userDTO.Title = v.Title
+		userDTO.LongUrl = v.LongUrl
+		userDTO.ShortUrl = v.ShortUrl
+		userDTO.Views = v.Views
+		userDTO.IsPrivate = v.IsPrivate
+		userDTO.IsFeeds = v.IsFeeds
+		userDTO.UserID = *v.UserID
+		userDTO.Username = res2.Name
+		userDTO.CreatedAt = v.CreatedAt
+		userDTO.UpdatedAt = v.UpdatedAt
+		userDTO.DeletedAt = v.DeletedAt
+		userDTOResponse = append(userDTOResponse, userDTO)
+	}
+	return userDTOResponse, err
 }
 
 func(us *urlShortenerService) UpdateUrlShortener(ctx context.Context, urlShortenerDTO dto.UrlShortenerUpdateDTO, urlShortenerID string) (error) {

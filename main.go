@@ -37,7 +37,7 @@ func main() {
 
 		followingService service.FollowingService = service.NewFollowingService(followingRepository)
 		feedsService service.FeedsService = service.NewFeedsService(feedsRepository, urlShortenerRepository, userRepository)
-		urlShortenerService service.UrlShortenerService = service.NewUrlShortenerService(urlShortenerRepository, privateRepository)
+		urlShortenerService service.UrlShortenerService = service.NewUrlShortenerService(urlShortenerRepository, privateRepository, userRepository)
 		userService service.UserService = service.NewUserService(userRepository)
 
 		followingController controller.FollowingController = controller.NewFollowingController(followingService, jwtService)
