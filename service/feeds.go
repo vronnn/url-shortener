@@ -34,8 +34,8 @@ func(fs *feedsService) GetAllFeeds(ctx context.Context) ([]dto.FeedsResponseDTO,
 	var feedsDTO dto.FeedsResponseDTO
 	for _, v := range res {
 		urlShortener, err := fs.urlShortenerRepository.GetUrlShortenerByIDUnscopped(ctx, v.UrlShortenerID)
-		if err != nil {
-			return nil, err
+		if urlShortener.ShortUrl == "" {
+			continue
 		}
 		user, err := fs.userRepository.FindUserByID(ctx, *urlShortener.UserID)
 		if err != nil {

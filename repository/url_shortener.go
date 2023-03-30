@@ -150,7 +150,7 @@ func(db *urlShortenerConnection) IncreaseViewsCount(ctx context.Context, urlShor
 
 func(db *urlShortenerConnection) GetUrlShortenerByIDUnscopped(ctx context.Context, urlShortenerID uuid.UUID) (entity.UrlShortener, error) {
 	var urlShortener entity.UrlShortener
-	tx := db.connection.Unscoped().Where("id = ?", urlShortenerID).Take(&urlShortener)
+	tx := db.connection.Unscoped().Where("id = ? and user_id is not null", urlShortenerID).Take(&urlShortener)
 	if tx.Error != nil {
 		return entity.UrlShortener{}, tx.Error
 	}
