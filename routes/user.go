@@ -15,7 +15,7 @@ func UserRoutes(router *gin.Engine, UserController controller.UserController, jw
 		userRoutes.GET("", middleware.Authenticate(jwtService, true), UserController.GetAllUser)
 		userRoutes.POST("/login", UserController.LoginUser)
 		userRoutes.DELETE("/", middleware.Authenticate(jwtService, false), UserController.DeleteUser)
-		userRoutes.PUT("/", middleware.Authenticate(jwtService, false), UserController.UpdateUser)
+		userRoutes.POST("/edit", middleware.Authenticate(jwtService, false), UserController.UpdateUser)
 		userRoutes.GET("/me", middleware.Authenticate(jwtService, false), UserController.MeUser)
 	}
 }
